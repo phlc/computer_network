@@ -41,18 +41,20 @@ public class Server extends Thread {
 
   //Object Fields
   private Socket con;
+  private long id;
   private BufferedReader socketReader;
   private BufferedWriter socketWriter;
 
   // Constructor
   public Server(Socket con){
+    this.id = ++ids;
     this.con = con;
     try {
       socketReader = new BufferedReader(new InputStreamReader(this.con.getInputStream()));
       socketWriter = new BufferedWriter(new OutputStreamWriter(this.con.getOutputStream()));
     
       //informar id
-      socketWriter.write(++ids + "\n");
+      socketWriter.write(this.id + "\n");
       socketWriter.flush();
     }catch (Exception e) {}
   }
@@ -74,13 +76,15 @@ public class Server extends Thread {
   public void run(){
     String inMsg = null;    
     try{
-
+      //Listar 
       listAvailables();      
 
-      while(!"sair".equalsIgnoreCase(inMsg)){
+      while(!"end".equalsIgnoreCase(inMsg)){
         inMsg = socketReader.readLine();
         
       }
+
+      System.out.println("Cliente "+ this.id + " desconectado.");
 
     }catch (Exception e) {}
   }//end método run

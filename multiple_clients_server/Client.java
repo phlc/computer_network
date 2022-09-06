@@ -114,7 +114,7 @@ public class Client {
   // close
   private void close(){
     try{
-      send("sair\n");
+      send("end\n");
       socketReader.close();
       socketWriter.close();
       socket.close();
@@ -126,5 +126,6 @@ public class Client {
 
     Client app = new Client();
     app.connect();
+
   }
 } 
