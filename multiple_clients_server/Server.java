@@ -109,7 +109,7 @@ public class Server extends Thread {
     socketWriter.write("Seus Eventos:\n");
     for(int i=0; i<tickets.length; i++){
       if(tickets[i] > 0){
-        socketWriter.write("Você tem "+tickets[i]+" ingressos do evento "
+        socketWriter.write("Você tem "+tickets[i]+" ingresso(s) do evento "
                         +events[i].getName() + " em " + events[i].getCity()+"\n");
       }
     }
@@ -141,9 +141,17 @@ public class Server extends Thread {
         else{ 
           try{
             int event = Integer.parseInt(inMsg);
+            socketWriter.write("\033[H\033[2J\n");
+            socketWriter.flush();
             if(this.buy(event)){
-
+              socketWriter.write("Parabéns. Compra realizada com sucesso.\n");
             }
+            else{
+              socketWriter.write("Desculpe. Evento Indisponível.\n");
+            }
+            socketWriter.write("Aperter ENTER para voltar a tela inicial\n");
+            socketWriter.flush();
+            inMsg = socketReader.readLine();
           }catch(NumberFormatException e){
             error = true;
           }
