@@ -46,8 +46,10 @@ public class Client {
         socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         id = Long.parseLong(socketReader.readLine());
-        System.out.println("Seu id é: "+id);
         if(id == -1) throw new Exception(); 
+        System.out.println("Você está conectado");
+        System.out.println("Seu id é: "+id);
+        System.out.println("Aperte ENTER para Continuar");
         online();
         
       }catch(Exception e){

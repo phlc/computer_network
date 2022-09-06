@@ -60,28 +60,67 @@ public class Server extends Thread {
   }
 
   // listAvailables
-  private void listAvailables() throws IOException{
+  private void listAvailables(boolean error) throws IOException{
+    socketWriter.write("\033[H\033[2J\n");
+    socketWriter.flush();
     socketWriter.write("Nossos Eventos Disponíveis:\n");
     for(int i=0; i<events.length; i++){
       if(events[i].getAvailable() > 0){
-        socketWriter.write(i + "- " + events[i].toString() + "\n");
+        socketWriter.write((i+1) + "- " + events[i].toString() + "\n");
       }
     }
     socketWriter.write("Para Comprar Digite o Número do Evento e aperte ENTER\n");
+    socketWriter.write("Para Ver seus Eventos digite \"Liste\" e aperte ENTER\n");
+    socketWriter.write("Para Sair digite \"Sair\" e aperte ENTER\n");
     socketWriter.flush();
+
+    if(error){
+      socketWriter.write("\nVocê deve digitar:\n");
+      socketWriter.write("- O número do evento\n");
+      socketWriter.write("- \"Liste\" ou\n- \"Sair\"\nTente Novamente:\n");
+      socketWriter.flush();
+    }
+  }
+
+  // buy
+  private synchronized boolean buy(int event){
+    boolean ok = false;
+    if(0<=event && event<=events.length){
+      ok = events[event-1].buy();
+    }
+    return ok;
   }
 
 
   // run
   public void run(){
-    String inMsg = null;    
+    String inMsg = null;  
+    boolean error = false;  
     try{
-      //Listar 
-      listAvailables();      
+      
+      inMsg = socketReader.readLine();
 
-      while(!"end".equalsIgnoreCase(inMsg)){
+      while(true){
+        listAvailables(error); 
         inMsg = socketReader.readLine();
-        
+        error = false;
+
+        if("liste".equalsIgnoreCase(inMsg)){
+          //listMyEvents();
+        }
+        else if("end".equalsIgnoreCase(inMsg)){
+          break;
+        }
+        else{ 
+          try{
+            int event = Integer.parseInt(inMsg);
+            if(this.buy(event)){
+
+            }
+          }catch(NumberFormatException e){
+            error = true;
+          }
+        }
       }
 
       System.out.println("Cliente "+ this.id + " desconectado.");
