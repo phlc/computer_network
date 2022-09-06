@@ -25,6 +25,14 @@ class Event{
     return ok;
   }
 
+  public String getName() {
+      return name;
+  }
+
+  public String getCity() {
+      return city;
+  }
+
   @Override
   public String toString() {
       return this.name + ", " + this.city + " - Disponíveis: " + this.available;
@@ -42,11 +50,13 @@ public class Server extends Thread {
   //Object Fields
   private Socket con;
   private long id;
+  private int[] tickets;
   private BufferedReader socketReader;
   private BufferedWriter socketWriter;
 
   // Constructor
   public Server(Socket con){
+    this.tickets = new int[5];
     this.id = ++ids;
     this.con = con;
     try {
@@ -85,10 +95,26 @@ public class Server extends Thread {
   // buy
   private synchronized boolean buy(int event){
     boolean ok = false;
-    if(0<=event && event<=events.length){
+    if(0<event && event<=events.length){
       ok = events[event-1].buy();
+      if(ok) this.tickets[event-1]++;
     }
     return ok;
+  }
+
+  // listEvents
+  private void listMyEvents() throws IOException{
+    socketWriter.write("\033[H\033[2J\n");
+    socketWriter.flush();
+    socketWriter.write("Seus Eventos:\n");
+    for(int i=0; i<tickets.length; i++){
+      if(tickets[i] > 0){
+        socketWriter.write("Você tem "+tickets[i]+" ingressos do evento "
+                        +events[i].getName() + " em " + events[i].getCity()+"\n");
+      }
+    }
+    socketWriter.write("Aperter ENTER para voltar a tela inicial\n");
+    socketWriter.flush();
   }
 
 
@@ -106,7 +132,8 @@ public class Server extends Thread {
         error = false;
 
         if("liste".equalsIgnoreCase(inMsg)){
-          //listMyEvents();
+          listMyEvents();
+          inMsg = socketReader.readLine();
         }
         else if("end".equalsIgnoreCase(inMsg)){
           break;
