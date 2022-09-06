@@ -33,7 +33,7 @@ public class Client {
   // init
   private void init() throws IOException{
     clear();
-    System.out.println("Bem Vindo ao Sistemas de Reservas Online");
+    System.out.println("Bem Vindo ao Sistemas de Compras Online");
     System.out.println("Conectando ao Servidor...");
   }
 
@@ -114,7 +114,7 @@ public class Client {
   // close
   private void close(){
     try{
-      send("end\n");
+      send("sair\n");
       socketReader.close();
       socketWriter.close();
       socket.close();

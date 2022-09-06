@@ -1,28 +1,33 @@
 import java.io.*;
 import java.net.*;
 
-class Hotel{
-  private String hotel;
+class Event{
+  private String name;
   private String city;
-  private long reserved;
+  private int available;
 
-  Hotel(String hotel, String city){
-    this.hotel = hotel;
+  Event(String name, String city, int available){
+    this.name = name;
     this.city = city;
-    this.reserved = -1;
+    this.available = available;
   }
 
-  public void setReserved(long reserved) {
-      this.reserved = reserved;
+  public int getAvailable(){
+    return this.available;
   }
 
-  public long getReserved() {
-      return reserved;
+  public boolean buy() {
+    boolean ok = false;
+    if(this.available>0){
+      this.available--;
+      ok = true;
+    }
+    return ok;
   }
 
   @Override
   public String toString() {
-      return hotel + ", " + city;
+      return this.name + ", " + this.city + " - Disponíveis: " + this.available;
   }
 }
 
@@ -30,7 +35,7 @@ class Hotel{
 public class Server extends Thread {
 
   //Static Fields
-  private static Hotel[] hotels = new Hotel[5];
+  private static Event[] events = new Event[5];
   private static ServerSocket server;
   private static long ids = 0;
 
@@ -54,13 +59,13 @@ public class Server extends Thread {
 
   // listAvailables
   private void listAvailables() throws IOException{
-    socketWriter.write("Nossos Hotes Disponíveis:\n");
-    for(int i=0; i<hotels.length; i++){
-      if(hotels[i].getReserved() == -1){
-        socketWriter.write(i + "- " + hotels[i].toString() + "\n");
+    socketWriter.write("Nossos Eventos Disponíveis:\n");
+    for(int i=0; i<events.length; i++){
+      if(events[i].getAvailable() > 0){
+        socketWriter.write(i + "- " + events[i].toString() + "\n");
       }
     }
-    socketWriter.write("Para Reservar Digite o Número e aperte ENTER\n");
+    socketWriter.write("Para Comprar Digite o Número do Evento e aperte ENTER\n");
     socketWriter.flush();
   }
 
@@ -87,11 +92,11 @@ public class Server extends Thread {
   public static void main(String []args) {
     int port = 12345;
 
-    hotels[0] = new Hotel("Ibis", "Belo Horizonte");
-    hotels[1] = new Hotel("Ouro Minas", "Belo Horizonte");
-    hotels[2] = new Hotel("Ibis", "Rio de Janeiro");
-    hotels[3] = new Hotel("Hyatt", "Nova Iorque");
-    hotels[4] = new Hotel("Seasons", "Roma");
+    events[0] = new Event("Cruzeiro x Criciúma", "Belo Horizonte", 10);
+    events[1] = new Event("Show Skank", "Belo Horizonte", 2);
+    events[2] = new Event("Rock in Rio", "Rio de Janeiro", 3);
+    events[3] = new Event("U2", "Nova Iorque", 4);
+    events[4] = new Event("2Cello", "Roma", 2);
 
 
     try{
