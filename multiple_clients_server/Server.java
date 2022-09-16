@@ -258,7 +258,7 @@ public class Server extends Thread {
         // Server que corresponde a uma conexão com um cliente específico.
         // Após a criação da Thread desse novo Server, a Thread principal
         // permanece em loop aguardando novas conexões e criando novas threads
-        Thread t = new Server(con);
+        Server t = new Server(con);
           t.start();
       }
     }
