@@ -1,23 +1,28 @@
-//Client
 
 import java.io.*;
 import java.net.Socket;
 
+/*
+ * Client Class
+ */
+
 public class Client {
   // Static Methods
-  // Clear
+  /*
+   * Clear - Limpa a tela do terminal
+   */
   private static void clear(){
     System.out.print("\033[H\033[2J");  
     System.out.flush();  
   }
 
   //Object Fields
-  private BufferedReader clientReader;
+  private BufferedReader clientReader; //Leitor de inputs do terminal
   private String ip = "127.0.0.1";
   private int port = 12345;
   private Socket socket;
-  private BufferedReader socketReader;
-  private BufferedWriter socketWriter;
+  private BufferedReader socketReader; //Escritor de output do socket
+  private BufferedWriter socketWriter; //Leitor de inputs do socket
   private boolean ended;
   private long id;
 
@@ -30,14 +35,20 @@ public class Client {
     id = -1;
   }
 
-  // init
+  /*
+   * init - Limpa e mostra na tela mensagens iniciais
+   */
   private void init() throws IOException{
     clear();
     System.out.println("Bem Vindo ao Sistemas de Compras Online");
     System.out.println("Conectando ao Servidor...");
   }
 
-  // connect
+  /*
+   * connect - Metodo que estabelece a conexão com o servidor
+   * Se sucesso: chama o método online
+   * Se erro: da opção de tentar novamente ou encerrar
+   */
   public void connect() throws IOException{
     while (!ended){
       try{
@@ -64,7 +75,12 @@ public class Client {
     }
   }
 
-  // online
+  /*
+   * online - Metodo executa em loop durante a conexão até ler input "sair".
+   * Le constantemente os buffers de entrada do socket e do terminal
+   * receive() e read() utilizam o metodo .ready() da BufferedReader
+   * que retorna true somente quando .read() não for bloquear a execução
+   */
   private void online() throws IOException{
     String inMsg = null;
     String outMsg = null;
@@ -87,6 +103,10 @@ public class Client {
     }
   }
 
+  /*
+   * read - Testa se há algo no buffer de entrada do teclado 
+   * @return null se buffer vazio || string lida
+   */
   private String read() throws IOException{
     String msg = null;
     if (clientReader.ready()){
@@ -95,16 +115,10 @@ public class Client {
     return msg;
   }
 
-
-  // send
-  public void send(String msg) throws IOException{
-    socketWriter.write(msg);
-    socketWriter.flush();
-  }
-
-
-
-  // receive
+  /*
+   * receive - Testa se há algo no buffer de entrada do socket 
+   * @return null se buffer vazio || string lida
+   */
   public String receive() throws IOException{
     String msg = null;
     if(socketReader.ready()){
@@ -113,7 +127,19 @@ public class Client {
     return msg;
   }
 
-  // close
+  /*
+   * send - Escreve e flush uma string no buffer de saída do socket
+   */
+  public void send(String msg) throws IOException{
+    socketWriter.write(msg);
+    socketWriter.flush();
+  }
+
+  
+
+  /*
+   * close - fecha a conexão
+   */
   private void close(){
     try{
       send("end\n");
@@ -124,6 +150,9 @@ public class Client {
 
   }
   
+  /*
+   * main - Cria um cliente e conecta ao servidor
+   */
   public static void main(String []args) throws IOException{
 
     Client app = new Client();
